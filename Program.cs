@@ -25,23 +25,24 @@ namespace MySQL_test
     //This class runs the majority of the application, all functionality between MySql and visual studio
     class Program
     {
+        //Assign a connection variable for use in various functions
         static MySqlConnection conn = connect();
 
+        //Connect to the database
         static MySqlConnection connect()
         {
             DatabaseConnection connection = new DatabaseConnection();
             return connection.getDBConnection("testAccount");
         }
 
-        //Employee submenu
+        //Employee submenu that is available after correctly logging in as an employee
         static void employeeMenu(MySqlConnection conn)
         {
             string choice = "0";
 
-            
-            
             while (choice != "4")
             {
+                //Display the Employee Menu
                 Console.WriteLine("Employee Menu:");
                 Console.WriteLine("1. Return all customer information");
                 Console.WriteLine("2. Return all stores and their information");
@@ -73,6 +74,7 @@ namespace MySQL_test
             }
         }
 
+        //Function to get the count of any needed values for incrementing like ProductSaleID for instance
         static int getCountData(string countQuery, string table)
         {
             MySqlDataAdapter da = new MySqlDataAdapter(countQuery, conn);
@@ -82,7 +84,6 @@ namespace MySQL_test
 
             int count = 0;
 
-            //conn.Open();
             foreach(DataRow row in dt.Rows)
             {
                 foreach(DataColumn col in dt.Columns)
@@ -95,17 +96,14 @@ namespace MySQL_test
             return count;
         }
 
+        //Function to insert a sold product into the product table
         static void insertSale(string productName, string location, int storeid)
         {
             try
             {
-                //MySqlConnection myconn2 = conn;
-
                 int newID = getCountData("SELECT COUNT(ProductSaleID) FROM product", "product");
 
                 int productSaleID = newID + 1;
-
-                
 
                 string newProductName = "\"" + productName + "\"";
                 string newLocation = "\"" + location + "\"";
@@ -126,6 +124,7 @@ namespace MySQL_test
 
         }
 
+        //function to add a new customer to the customer table
         static void insertCustomer(string email, string firstname, string lastname, string password)
         {
             try
@@ -135,7 +134,7 @@ namespace MySQL_test
                 string newFirst = "\"" + firstname + "\"";
                 string newLast = "\"" + lastname + "\"";
                 string newPass = "\"" + password + "\"";
-                //string expiration = "''2022-04-09'";
+
                 string query = "INSERT INTO customer(customerID, email, firstname, lastname, rewardlevel, rewardpoints, accpassword) values (" + customerID + ", " + newEmail + ", " + newFirst + ", " + newLast + ", " + 0 + ", " + 0 + ", " + newPass + ");";
                 MySqlCommand myCommand = new MySqlCommand(query, conn);
                 MySqlDataReader reader;
@@ -153,12 +152,12 @@ namespace MySQL_test
 
         }
 
+        //function to display the item menu
         static void itemMenu(MySqlConnection conn, string location, int storeid)
         {
-            Console.WriteLine("Our Menu:\n 1. Hot Coffee \n 2. Hot Tea \n 3. Hot Chocolate \n 4. Iced Coffee");
+            Console.WriteLine("Our Menu: What would you like to purchase? \n 1. Hot Coffee \n 2. Hot Tea \n 3. Hot Chocolate \n 4. Iced Coffee");
 
             string menuChoice = Console.ReadLine();
-            Random rd = new Random();
 
             switch (menuChoice)
             {
@@ -242,10 +241,9 @@ namespace MySQL_test
             }
         }
 
+        //function to display the customer's menu when logged in with a valid login
         static void customerMenu(MySqlConnection conn, string email)
         {
-
-
             string choice = "0";
 
             while (choice != "4")
@@ -279,6 +277,7 @@ namespace MySQL_test
             }
         }
 
+        //function to check for a valid employee login
         static void employeeLogin(MySqlConnection conn)
         {
             string eid;
@@ -307,9 +306,9 @@ namespace MySQL_test
                 employeeMenu(conn);
             else
                 Console.WriteLine("invalid employee id or password");
-            
         }
 
+        //function to check for a valid customer login
         static void customerLogin(MySqlConnection conn)
         {
             string email;
@@ -341,6 +340,7 @@ namespace MySQL_test
                 Console.WriteLine("invalid email or password");
         }
 
+        //funciton to print out various data based on a passed query
         static void printData(string query, MySqlConnection conn, string table)
         {
             MySqlDataAdapter da = new MySqlDataAdapter(query, conn);
@@ -361,6 +361,8 @@ namespace MySQL_test
             }
             Console.Write("\n");
         }
+
+        //main function to run the program
         static void Main(string[] args)
         {
             string input = "0";
@@ -370,15 +372,12 @@ namespace MySQL_test
                 conn.Open();
                 while (input != "5")
                 {
-                    
-
                     Console.WriteLine("What would you like to do?");
                     Console.WriteLine("1. Make an account");
                     Console.WriteLine("2. List Locations");
                     Console.WriteLine("3. Customer Login");
                     Console.WriteLine("4. Employee Login");
                     Console.WriteLine("5. Exit");
-
 
                     input = Console.ReadLine();
 
